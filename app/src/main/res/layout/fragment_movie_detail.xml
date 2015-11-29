@@ -1,36 +1,43 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+            android:background="@android:color/background_dark"
+            android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="conor.obrien.popularmovies.fragments.MovieDetailFragment">
 
-    <TextView
-        android:id="@+id/textview_movie_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/imageview_movie_poster"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/textview_movie_title"
+            style="@style/MovieTitle"/>
 
-    <TextView
-        android:id="@+id/textview_movie_synopsis"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        <ImageView
+            android:id="@+id/imageview_movie_poster"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textview_movie_title"/>
 
-    <TextView
-        android:id="@+id/textview_user_rating"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/textview_movie_synopsis"
+            style="@style/MovieSynopsis"
+            android:layout_below="@id/textview_movie_title"/>
 
-    <TextView
-        android:id="@+id/textview_release_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/textview_user_rating"
+            style="@style/MovieDetails"
+            android:layout_below="@id/textview_movie_synopsis"/>
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/textview_release_date"
+            style="@style/MovieDetails"
+            android:layout_below="@id/textview_user_rating"/>
+
+    </RelativeLayout>
+</ScrollView>

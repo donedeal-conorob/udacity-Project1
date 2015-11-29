@@ -1,20 +1,23 @@
 package conor.obrien.popularmovies.activities;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import conor.obrien.popularmovies.R;
-import conor.obrien.popularmovies.adapters.MovieGridAdapter;
 import conor.obrien.popularmovies.api.DiscoverMovieInterface;
 import conor.obrien.popularmovies.fragments.MovieGridFragment;
 import conor.obrien.popularmovies.model.MovieList;
 import conor.obrien.popularmovies.model.MovieResult;
+import conor.obrien.popularmovies.resources.Api;
 import conor.obrien.popularmovies.resources.Constants;
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -23,7 +26,15 @@ import retrofit.client.Response;
 
 public class MovieGridActivity extends AppCompatActivity implements MovieGridFragment.MovieGridFragmentCallbacks {
 
+    static final String EXTRA_HAS_MOVIES = "hasMovies";
+    static final String EXTRA_MOVIE_RESULTS = "movieResults";
+
     MovieGridFragment mMovieGridFragment;
+    RestAdapter restAdapter = new RestAdapter.Builder().setLogLevel(RestAdapter.LogLevel.FULL).setEndpoint(Constants.URLs.API_URL).build();
+    DiscoverMovieInterface movieApi = restAdapter.create(DiscoverMovieInterface.class);
+
+    List<MovieResult> mMovieResults = new ArrayList<>();
+    Boolean mHasMovies = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +44,27 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridFra
         mMovieGridFragment = (MovieGridFragment) getSupportFragmentManager().findFragmentById(R.id.movie_grid_fragment);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean(EXTRA_HAS_MOVIES, mHasMovies);
+        if (mMovieResults != null) {
+            outState.putParcelableArrayList(EXTRA_MOVIE_RESULTS, (ArrayList<? extends Parcelable>) mMovieResults);
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        mHasMovies = savedInstanceState.getBoolean(EXTRA_HAS_MOVIES);
+
+        if (savedInstanceState.containsKey(EXTRA_MOVIE_RESULTS)) {
+            mMovieResults = savedInstanceState.getParcelableArrayList(EXTRA_MOVIE_RESULTS);
+            mMovieGridFragment.populateMovieGrid(mMovieResults);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -50,9 +82,9 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridFra
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_sort_by_highest_rated) {
-            mMovieGridFragment.getMovies(Constants.SortBy.VOTE_AVERAGE_DESC);
+            getMovies(Constants.SortBy.VOTE_AVERAGE_DESC);
         } else  if (id == R.id.action_sort_by_most_popular) {
-            mMovieGridFragment.getMovies(Constants.SortBy.POPULARITY_DESC);
+            getMovies(Constants.SortBy.POPULARITY_DESC);
         }
 
         return super.onOptionsItemSelected(item);
@@ -65,5 +97,26 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridFra
         extras.putParcelable(Constants.Keys.MOVIE_RESULT_KEY, movieResult);
         intent.putExtras(extras);
         startActivity(intent);
+    }
+
+    public void getMovies(String sortby) {
+        movieApi.getMovies(sortby, Api.Keys.API_KEY, new Callback<MovieList>() {
+            @Override
+            public void success(MovieList movieList, Response response) {
+                mMovieResults = movieList.getResults();
+                mMovieGridFragment.populateMovieGrid(mMovieResults);
+                mHasMovies = true;
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.e(this.getClass().getSimpleName(), error.toString());
+            }
+        });
+    }
+
+    @Override
+    public Boolean getHasMovies() {
+        return mHasMovies;
     }
 }

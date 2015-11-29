@@ -5,4 +5,7 @@
     <string name="action_sort_by_highest_rated">Sort By: Highest Rated</string>
     <string name="action_sort_by_most_popular">Sort By: Most Popular</string>
     <string name="title_activity_movie_detail">Movie Details</string>
+
+    <string name="movie_details_rating">Rating Average:</string>
+    <string name="movie_details_release_date">Released:</string>
 </resources>

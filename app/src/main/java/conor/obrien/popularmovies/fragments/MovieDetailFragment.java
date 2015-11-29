@@ -1,7 +1,7 @@
 package conor.obrien.popularmovies.fragments;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,12 +55,12 @@ public class MovieDetailFragment extends Fragment {
 
         mMovieTitleTextView.setText(mMovieResult.getTitle());
         mMovieSynopsisTextView.setText(mMovieResult.getOverview());
-        mMovieUserRatingTextView.setText(String.valueOf(mMovieResult.getVoteAverage()));
-        mMovieReleaseDateTextView.setText(mMovieResult.getReleaseDate());
-        Picasso.with(getActivity()).load(Constants.URLs.POSTER_URL + mMovieResult.getPosterPath()).into(mMoviePosterImageView);
+        mMovieUserRatingTextView.setText(getString(R.string.movie_details_rating) + " " + String.valueOf(mMovieResult.getVoteAverage()));
+        mMovieReleaseDateTextView.setText(getString(R.string.movie_details_release_date) + " " + mMovieResult.getReleaseDate());
+        Picasso.with(getActivity()).load(Constants.URLs.POSTER_URL_LARGE + mMovieResult.getPosterPath()).into(mMoviePosterImageView);
     }
 
     public interface MovieDetailFragmentCallbacks {
-        public MovieResult getMovieResult();
+        MovieResult getMovieResult();
     }
 }

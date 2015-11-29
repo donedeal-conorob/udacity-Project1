@@ -2,13 +2,17 @@ package conor.obrien.popularmovies.resources;
 
 /**
  * Created by Conor O'Brien on 12/11/15.
+ *
+ * Class to store app constants
  */
 public class Constants {
 
     public static class URLs {
 
         public static final String API_URL = "http://api.themoviedb.org/3";
-        public static final String POSTER_URL = "http://image.tmdb.org/t/p/w185/";
+        public static final String POSTER_URL_SMALL = "http://image.tmdb.org/t/p/w185/";
+        public static final String POSTER_URL_MEDIUM = "http://image.tmdb.org/t/p/w370/";
+        public static final String POSTER_URL_LARGE = "http://image.tmdb.org/t/p/w500/";
     }
 
     public static class Keys {

@@ -1,13 +1,11 @@
 package conor.obrien.popularmovies.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -19,6 +17,8 @@ import conor.obrien.popularmovies.resources.Constants;
 
 /**
  * Created by Conor O'Brien on 12/11/15.
+ *
+ * Adapter for the movie grid main view.
  */
 public class MovieGridAdapter  extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHolder> {
 
@@ -36,15 +36,15 @@ public class MovieGridAdapter  extends RecyclerView.Adapter<MovieGridAdapter.Mov
     public MovieViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.movie_grid_item, viewGroup, false);
-        MovieViewHolder viewHolder = new MovieViewHolder(view, mContext);
-        return viewHolder;
+        return new MovieViewHolder(view, mContext);
     }
 
     @Override
     public void onBindViewHolder(MovieViewHolder viewHolder, int i) {
         mMovieResult = mMovieList.get(i);
 
-        Picasso.with(viewHolder.mMoviePoster.getContext()).load(Constants.URLs.POSTER_URL + mMovieResult.getPosterPath()).into(viewHolder.mMoviePoster);
+        Picasso.with(viewHolder.mMoviePoster.getContext()).load(Constants.URLs.POSTER_URL_MEDIUM + mMovieResult.getPosterPath()).into(viewHolder.
+                mMoviePoster);
     }
 
     @Override
@@ -57,15 +57,21 @@ public class MovieGridAdapter  extends RecyclerView.Adapter<MovieGridAdapter.Mov
         }
     }
 
-    public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public void setMovieList(List<MovieResult> movieList) {
+        this.mMovieList = movieList;
+    }
+
+    public interface MovieGridAdapterCallbacks {
+        void startMovieDetailsActivity(MovieResult movieResult);
+    }
+
+    public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ImageView mMoviePoster;
-        private Context mViewHolderContext;
 
         public MovieViewHolder(View movieView, Context context) {
             super(movieView);
             mMoviePoster = (ImageView) movieView.findViewById(R.id.img_poster);
-            mViewHolderContext = context;
 
             movieView.setClickable(true);
             movieView.setOnClickListener(this);
@@ -77,13 +83,5 @@ public class MovieGridAdapter  extends RecyclerView.Adapter<MovieGridAdapter.Mov
 
             mMovieGridAdapterCallbacks.startMovieDetailsActivity(mMovieResult);
         }
-    }
-
-    public void setMovieList(List<MovieResult> movieList) {
-        this.mMovieList = movieList;
-    }
-
-    public interface MovieGridAdapterCallbacks {
-        public void startMovieDetailsActivity(MovieResult movieResult);
     }
 }

@@ -1,25 +1,19 @@
 package conor.obrien.popularmovies.fragments;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import conor.obrien.popularmovies.R;
 import conor.obrien.popularmovies.adapters.MovieGridAdapter;
-import conor.obrien.popularmovies.api.DiscoverMovieInterface;
-import conor.obrien.popularmovies.model.MovieList;
 import conor.obrien.popularmovies.model.MovieResult;
-import conor.obrien.popularmovies.resources.Api;
 import conor.obrien.popularmovies.resources.Constants;
-import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -30,8 +24,6 @@ public class MovieGridFragment extends Fragment implements MovieGridAdapter.Movi
     RecyclerView.LayoutManager mLayoutManager;
     MovieGridAdapter mAdapter;
     MovieGridFragmentCallbacks mMovieGridFragmentCallbacks;
-    RestAdapter restAdapter = new RestAdapter.Builder().setLogLevel(RestAdapter.LogLevel.FULL).setEndpoint(Constants.URLs.API_URL).build();
-    DiscoverMovieInterface movieApi = restAdapter.create(DiscoverMovieInterface.class);
 
     public MovieGridFragment() {
     }
@@ -52,24 +44,21 @@ public class MovieGridFragment extends Fragment implements MovieGridAdapter.Movi
         mLayoutManager = new GridLayoutManager(view.getContext(), 2);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        getMovies(Constants.SortBy.POPULARITY_DESC);
-
         return view;
     }
 
-    public void getMovies(String sortby) {
-        movieApi.getMovies(sortby, Api.Keys.API_KEY, new Callback<MovieList>() {
-            @Override
-            public void success(MovieList movieList, Response response) {
-                mAdapter.setMovieList(movieList.getResults());
-                mAdapter.notifyDataSetChanged();
-            }
+    @Override
+    public void onResume() {
+        super.onResume();
 
-            @Override
-            public void failure(RetrofitError error) {
-                Log.e(this.getClass().getSimpleName(), error.toString());
-            }
-        });
+        if (!mMovieGridFragmentCallbacks.getHasMovies()) {
+            mMovieGridFragmentCallbacks.getMovies(Constants.SortBy.POPULARITY_DESC);
+        }
+    }
+
+    public void populateMovieGrid(List<MovieResult> movieResults) {
+        mAdapter.setMovieList(movieResults);
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -78,6 +67,10 @@ public class MovieGridFragment extends Fragment implements MovieGridAdapter.Movi
     }
 
     public interface MovieGridFragmentCallbacks {
-        public void startMovieDetailsActivity (MovieResult movieResult);
+        void startMovieDetailsActivity(MovieResult movieResult);
+
+        void getMovies(String sortBy);
+
+        Boolean getHasMovies();
     }
 }
